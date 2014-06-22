@@ -32,12 +32,27 @@
 					"fontname" : "Verdana",
 					"fontsize" : 10.0,
 					"frgb" : 0.0,
+					"id" : "obj-62",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 15.0, 109.5, 145.0, 19.0 ],
+					"presentation_rect" : [ 15.0, 106.5, 0.0, 0.0 ],
+					"text" : "Graham Wakefield 2014"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Verdana",
+					"fontsize" : 10.0,
+					"frgb" : 0.0,
 					"id" : "obj-61",
 					"linecount" : 5,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 927.5, 575.5, 163.0, 67.0 ],
+					"patching_rect" : [ 927.5, 584.5, 163.0, 67.0 ],
 					"text" : "When using multiple kinects, it is essential that each one is connected to a unique host controller bus. Most laptops only have one bus."
 				}
 
@@ -52,7 +67,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 927.5, 544.5, 163.0, 31.0 ],
+					"patching_rect" : [ 927.5, 553.5, 163.0, 31.0 ],
 					"text" : "Note: it might not work over USB 3.0 ports on OSX."
 				}
 
@@ -66,7 +81,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 420.0, 206.0, 141.0, 17.0 ],
+					"patching_rect" : [ 420.0, 215.0, 141.0, 17.0 ],
 					"text" : "open A00363822555042A",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -81,7 +96,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 729.0, 64.0, 228.0, 17.0 ],
+					"patching_rect" : [ 729.0, 73.0, 228.0, 17.0 ],
 					"text" : "import calibration-A00363822555042A.yml",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -97,7 +112,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "int", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 713.0, 263.0, 50.0, 19.0 ]
+					"patching_rect" : [ 713.0, 272.0, 50.0, 19.0 ]
 				}
 
 			}
@@ -111,7 +126,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 984.0, 413.0, 50.0, 19.0 ]
+					"patching_rect" : [ 984.0, 422.0, 50.0, 19.0 ]
 				}
 
 			}
@@ -125,7 +140,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 934.0, 413.0, 50.0, 19.0 ]
+					"patching_rect" : [ 934.0, 422.0, 50.0, 19.0 ]
 				}
 
 			}
@@ -139,7 +154,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 886.0, 413.0, 50.0, 19.0 ]
+					"patching_rect" : [ 886.0, 422.0, 50.0, 19.0 ]
 				}
 
 			}
@@ -152,7 +167,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "float", "float", "float" ],
-					"patching_rect" : [ 886.0, 390.0, 117.0, 19.0 ],
+					"patching_rect" : [ 886.0, 399.0, 117.0, 19.0 ],
 					"text" : "unpack f f f",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -167,7 +182,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 886.0, 362.0, 66.0, 19.0 ],
+					"patching_rect" : [ 886.0, 371.0, 66.0, 19.0 ],
 					"text" : "route accel",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -182,7 +197,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 660.0, 263.0, 36.0, 17.0 ],
+					"patching_rect" : [ 660.0, 272.0, 36.0, 17.0 ],
 					"text" : "accel"
 				}
 
@@ -196,7 +211,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 324.0, 597.0, 150.0, 19.0 ],
+					"patching_rect" : [ 324.0, 606.0, 150.0, 19.0 ],
 					"text" : "Some reference object",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -211,7 +226,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 31.0, 161.0, 42.0, 19.0 ],
+					"patching_rect" : [ 31.0, 170.0, 42.0, 19.0 ],
 					"text" : "sel 32",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -226,7 +241,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 4,
 					"outlettype" : [ "int", "int", "int", "int" ],
-					"patching_rect" : [ 31.0, 131.0, 61.0, 19.0 ],
+					"patching_rect" : [ 31.0, 140.0, 61.0, 19.0 ],
 					"text" : "key",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -241,7 +256,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 835.0, 272.0, 117.0, 17.0 ],
+					"patching_rect" : [ 835.0, 281.0, 117.0, 17.0 ],
 					"text" : "file kinect_shader.jxs",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -257,7 +272,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 337.5, 356.0, 92.0, 31.0 ],
+					"patching_rect" : [ 337.5, 365.0, 92.0, 31.0 ],
 					"text" : "Point cloud (float32 3 Nx1)",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -273,7 +288,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 547.5, 356.0, 96.0, 31.0 ],
+					"patching_rect" : [ 547.5, 365.0, 96.0, 31.0 ],
 					"text" : "Raw RGB \n(char 3 640 480)",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -289,7 +304,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 445.5, 356.0, 94.0, 31.0 ],
+					"patching_rect" : [ 445.5, 365.0, 94.0, 31.0 ],
 					"text" : "Depth in mm\n(long 2 640 480)",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -304,7 +319,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 660.0, 152.0, 57.0, 19.0 ],
+					"patching_rect" : [ 660.0, 161.0, 57.0, 19.0 ],
 					"text" : "loadbang",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -319,7 +334,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 337.5, 466.0, 78.0, 19.0 ],
+					"patching_rect" : [ 337.5, 475.0, 78.0, 19.0 ],
 					"text" : "jit.anim.node",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -334,7 +349,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 324.0, 616.0, 294.0, 19.0 ],
+					"patching_rect" : [ 324.0, 625.0, 294.0, 19.0 ],
 					"text" : "jit.gl.gridshape free @shape opencube @poly_mode 1 1",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -350,7 +365,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 324.0, 122.0, 220.0, 19.0 ],
+					"patching_rect" : [ 324.0, 131.0, 220.0, 19.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -365,7 +380,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 324.0, 174.0, 221.0, 19.0 ],
+					"patching_rect" : [ 324.0, 183.0, 221.0, 19.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -380,7 +395,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 324.0, 157.0, 221.0, 19.0 ],
+					"patching_rect" : [ 324.0, 166.0, 221.0, 19.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -394,8 +409,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 15.0, 90.5, 145.0, 19.0 ],
-					"text" : "Graham Wakefield 2014"
+					"patching_rect" : [ 15.0, 90.5, 378.0, 19.0 ],
+					"text" : "Uses libfreenect on OSX, the Kinect for Windows SDK on Windows"
 				}
 
 			}
@@ -808,7 +823,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 337.5, 438.0, 46.0, 19.0 ],
+					"patching_rect" : [ 337.5, 447.0, 46.0, 19.0 ],
 					"saved_object_attributes" : 					{
 						"default_fontface" : 0,
 						"default_fontname" : "Arial",
@@ -1176,7 +1191,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 144.0, 356.0, 59.0, 19.0 ],
+					"patching_rect" : [ 144.0, 365.0, 59.0, 19.0 ],
 					"saved_object_attributes" : 					{
 						"default_fontface" : 0,
 						"default_fontname" : "Arial",
@@ -1204,7 +1219,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 660.0, 235.0, 61.0, 17.0 ],
+					"patching_rect" : [ 660.0, 244.0, 61.0, 17.0 ],
 					"text" : "getdevlist",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -1218,7 +1233,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 798.0, 362.0, 81.0, 19.0 ],
+					"patching_rect" : [ 798.0, 371.0, 81.0, 19.0 ],
 					"text" : "print freenect",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -1399,7 +1414,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 733.0, 362.0, 54.0, 19.0 ],
+					"patching_rect" : [ 733.0, 371.0, 54.0, 19.0 ],
 					"saved_object_attributes" : 					{
 						"default_fontface" : 0,
 						"default_fontname" : "Arial",
@@ -1429,7 +1444,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 733.0, 390.0, 100.0, 19.0 ],
+					"patching_rect" : [ 733.0, 399.0, 100.0, 19.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -2588,7 +2603,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 729.0, 215.0, 125.0, 19.0 ],
+					"patching_rect" : [ 729.0, 224.0, 125.0, 19.0 ],
 					"saved_object_attributes" : 					{
 						"default_fontface" : 0,
 						"default_fontname" : "Arial",
@@ -2616,7 +2631,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 835.0, 246.0, 266.0, 19.0 ],
+					"patching_rect" : [ 835.0, 255.0, 266.0, 19.0 ],
 					"text" : "jit.gl.texture free @name color_map @rectangle 0",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2631,7 +2646,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 782.0, 298.0, 306.0, 19.0 ],
+					"patching_rect" : [ 782.0, 307.0, 306.0, 19.0 ],
 					"text" : "jit.gl.shader @file kinect_shader.jxs @name kinect_shader",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2646,7 +2661,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 250.0, 362.0, 80.0, 35.0 ],
+					"patching_rect" : [ 250.0, 371.0, 80.0, 35.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -2660,7 +2675,7 @@
 					"numinlets" : 9,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 324.0, 495.0, 474.0, 19.0 ],
+					"patching_rect" : [ 324.0, 504.0, 474.0, 19.0 ],
 					"text" : "jit.gl.mesh free @draw_mode points @shader kinect_shader @texture color color_map",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2675,7 +2690,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 614.0, 235.0, 37.0, 17.0 ],
+					"patching_rect" : [ 614.0, 244.0, 37.0, 17.0 ],
 					"text" : "close",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2690,7 +2705,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 420.0, 263.0, 142.0, 17.0 ],
+					"patching_rect" : [ 420.0, 272.0, 142.0, 17.0 ],
 					"text" : "open B00366618096102B",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2705,7 +2720,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 729.0, 152.0, 246.0, 19.0 ],
+					"patching_rect" : [ 729.0, 161.0, 246.0, 19.0 ],
 					"text" : "t b l",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2720,7 +2735,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 729.0, 185.0, 246.0, 17.0 ],
+					"patching_rect" : [ 729.0, 194.0, 246.0, 17.0 ],
 					"text" : "import calibration-B00366618096102B.yml",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2735,7 +2750,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 745.0, 90.5, 230.0, 17.0 ],
+					"patching_rect" : [ 745.0, 99.5, 230.0, 17.0 ],
 					"text" : "import calibration-A00365910800132A.yml",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2750,7 +2765,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 761.5, 117.0, 230.0, 17.0 ],
+					"patching_rect" : [ 761.5, 126.0, 230.0, 17.0 ],
 					"text" : "import calibration-B00366618096102B.yml",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2765,7 +2780,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 536.0, 439.5, 238.0, 19.0 ],
+					"patching_rect" : [ 536.0, 448.5, 238.0, 19.0 ],
 					"text" : "jit.gl.texture free @name color @rectangle 0",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2780,7 +2795,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 569.0, 235.0, 36.0, 17.0 ],
+					"patching_rect" : [ 569.0, 244.0, 36.0, 17.0 ],
 					"text" : "open",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2795,7 +2810,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 420.0, 235.0, 142.0, 17.0 ],
+					"patching_rect" : [ 420.0, 244.0, 142.0, 17.0 ],
 					"text" : "open A00365910800132A",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2811,7 +2826,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 250.0, 398.0, 74.0, 116.0 ],
+					"patching_rect" : [ 250.0, 407.0, 74.0, 116.0 ],
 					"text" : "With @unique 1, the output rate of kinect is throttled to the Kinect data rate (~30fps)",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2827,7 +2842,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 31.0, 471.5, 205.0, 177.0 ],
+					"patching_rect" : [ 31.0, 480.5, 205.0, 177.0 ],
 					"text" : "Outputs a point cloud from the Kinect.\nAlso outputs raw RGB and depth.\n\nCan use Kinect calibration (such as produced by RGBDemo or OpenCV) to rectify the depth/rgb data.\n\nRuns depth processing in a background thread to reduce load in patch.\n\nPoint filtering? \nDepth smoothing?\nBackground subtraction? ",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2843,7 +2858,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 15.0, 71.0, 378.0, 21.0 ],
-					"text" : "Using libfreenect to get 3D point clouds from Kinect devices"
+					"text" : "Getting 3D point clouds from Kinect devices"
 				}
 
 			}
@@ -2870,7 +2885,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 45.5, 244.0, 80.0, 35.0 ],
+					"patching_rect" : [ 45.5, 253.0, 80.0, 35.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -2885,7 +2900,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 4,
 					"outlettype" : [ "jit_matrix", "jit_matrix", "jit_matrix", "" ],
-					"patching_rect" : [ 324.0, 328.0, 337.0, 19.0 ],
+					"patching_rect" : [ 324.0, 337.0, 337.0, 19.0 ],
 					"text" : "kinect",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2900,7 +2915,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 31.0, 389.0, 82.0, 17.0 ],
+					"patching_rect" : [ 31.0, 398.0, 82.0, 17.0 ],
 					"text" : "fullscreen $1",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -2914,7 +2929,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 31.0, 362.0, 20.0, 20.0 ]
+					"patching_rect" : [ 31.0, 371.0, 20.0, 20.0 ]
 				}
 
 			}
@@ -3016,7 +3031,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 53.5, 362.0, 42.0, 19.0 ],
+					"patching_rect" : [ 53.5, 371.0, 42.0, 19.0 ],
 					"saved_object_attributes" : 					{
 						"default_fontface" : 0,
 						"default_fontname" : "Arial",
@@ -3044,7 +3059,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 31.0, 413.0, 164.0, 19.0 ],
+					"patching_rect" : [ 31.0, 422.0, 164.0, 19.0 ],
 					"text" : "jit.window free @size 640 480",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3058,7 +3073,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 31.0, 187.0, 20.0, 20.0 ]
+					"patching_rect" : [ 31.0, 196.0, 20.0, 20.0 ]
 				}
 
 			}
@@ -3071,7 +3086,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 31.0, 215.0, 65.0, 19.0 ],
+					"patching_rect" : [ 31.0, 224.0, 65.0, 19.0 ],
 					"text" : "qmetro 15",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3086,7 +3101,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 31.0, 328.0, 205.0, 19.0 ],
+					"patching_rect" : [ 31.0, 337.0, 205.0, 19.0 ],
 					"text" : "jit.gl.render free @erase_color 0 0 0 1",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3101,7 +3116,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "bang", "bang", "erase" ],
-					"patching_rect" : [ 31.0, 283.0, 69.0, 19.0 ],
+					"patching_rect" : [ 31.0, 292.0, 69.0, 19.0 ],
 					"text" : "t b b erase",
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3123,7 +3138,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 53.5, 187.0, 20.0, 20.0 ],
+					"patching_rect" : [ 53.5, 196.0, 20.0, 20.0 ],
 					"rounded" : 60.0,
 					"text" : "1",
 					"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ],
@@ -3141,7 +3156,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 197.5, 283.0, 115.5, 19.0 ],
+					"patching_rect" : [ 197.5, 292.0, 115.5, 19.0 ],
 					"text_width" : 80.0,
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3157,7 +3172,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 324.0, 140.0, 220.0, 19.0 ],
+					"patching_rect" : [ 324.0, 149.0, 220.0, 19.0 ],
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
 
@@ -3172,7 +3187,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 125.0, 389.0, 85.0, 19.0 ],
+					"patching_rect" : [ 125.0, 398.0, 85.0, 19.0 ],
 					"text_width" : 50.0,
 					"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
 				}
@@ -3187,7 +3202,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 713.0, 291.0, 50.0, 17.0 ],
+					"patching_rect" : [ 713.0, 300.0, 50.0, 17.0 ],
 					"text" : "led $1"
 				}
 
@@ -3198,7 +3213,7 @@
 					"destination" : [ "obj-13", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 651.5, 356.5, 742.5, 356.5 ],
+					"midpoints" : [ 651.5, 365.5, 742.5, 365.5 ],
 					"source" : [ "obj-1", 3 ]
 				}
 
@@ -3235,7 +3250,7 @@
 					"destination" : [ "obj-36", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 651.5, 356.5, 807.5, 356.5 ],
+					"midpoints" : [ 651.5, 365.5, 807.5, 365.5 ],
 					"source" : [ "obj-1", 3 ]
 				}
 
@@ -3245,7 +3260,7 @@
 					"destination" : [ "obj-52", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 651.5, 354.0, 895.5, 354.0 ],
+					"midpoints" : [ 651.5, 363.0, 895.5, 363.0 ],
 					"source" : [ "obj-1", 3 ]
 				}
 
@@ -3399,7 +3414,7 @@
 					"destination" : [ "obj-1", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 207.0, 314.5, 333.5, 314.5 ],
+					"midpoints" : [ 207.0, 323.5, 333.5, 323.5 ],
 					"source" : [ "obj-28", 0 ]
 				}
 
@@ -3409,7 +3424,7 @@
 					"destination" : [ "obj-1", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 65.5, 315.0, 333.5, 315.0 ],
+					"midpoints" : [ 65.5, 324.0, 333.5, 324.0 ],
 					"source" : [ "obj-3", 1 ]
 				}
 
@@ -3554,7 +3569,7 @@
 					"destination" : [ "obj-9", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 40.5, 238.5, 55.0, 238.5 ],
+					"midpoints" : [ 40.5, 247.5, 55.0, 247.5 ],
 					"source" : [ "obj-5", 0 ]
 				}
 
@@ -3651,12 +3666,8 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "attrui.mxe",
-				"type" : "iLaF"
-			}
-, 			{
-				"name" : "kinect.mxe",
-				"type" : "iLaF"
+				"name" : "kinect.mxo",
+				"type" : "iLaX"
 			}
  ]
 	}
