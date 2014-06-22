@@ -1,0 +1,66 @@
+<jittershader name="kinect_shader"> 
+	<param name="T" type="vec3" default="0. 0. 0." />
+	<param name="R" type="mat3" default="1. 0. 0. 0. 1. 0. 0. 0. 1." />
+	<param name="rgb" type="int" default="0" />
+	<param name="color_map" type="int" default="1" />
+	<language name="glsl" version="1.0">
+		<bind param="T" program="vp" />
+		<bind param="R" program="vp" />
+		<bind param="color_map" program="vp" />
+		
+		<bind param="rgb" program="fp" />
+
+		<program name="vp" type="vertex">
+<![CDATA[
+#version 120
+#extension GL_ARB_texture_rectangle : enable
+
+varying vec2 texcoord0;
+
+uniform sampler2D color_map;
+
+uniform vec3 T;
+uniform mat3 R;
+
+void main() {	
+	// convert to RGBDemo system:
+	vec3 v = vec3(gl_Vertex.x, -gl_Vertex.y, -gl_Vertex.z);
+	
+
+	// move the point into the RGB camera's perspective:
+	vec3 v2 = R * (v - T);
+	
+	// remove depth (location of the 3D depth point on the RGB image plane):
+	vec2 ndc = v2.xy / v2.z;
+
+	// use this to index our pre-calculated RGB distortion map
+	// the map is in the [-0.625, 0.625] range, but we want a texture coordinate in 0..1:
+	vec2 t = 0.5 + ndc*0.8;
+	
+	// now get warped texture coordinate from the map:
+	texcoord0 = texture2D(color_map, t).xy;
+	
+	// position pass through:
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex; //ftransform();
+}
+]]>		
+		</program>
+		<program name="fp" type="fragment">
+<![CDATA[
+#version 120
+#extension GL_ARB_texture_rectangle : enable
+	
+// texcoords
+varying vec2 texcoord0;
+
+// samplers
+uniform sampler2D rgb;
+
+// entry point
+void main() {      
+	gl_FragColor = texture2D(rgb, texcoord0); 
+}
+]]>		
+		</program>
+	</language> 
+</jittershader>

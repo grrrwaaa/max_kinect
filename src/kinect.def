@@ -1,0 +1,4 @@
+LIBRARY kinect.mxe
+
+EXPORTS
+	main
