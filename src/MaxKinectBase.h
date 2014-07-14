@@ -132,8 +132,9 @@ public:
 		info.flags |= JIT_MATRIX_DATA_PACK_TIGHT;
 		info.planecount = 3;
 		info.type = gensym("float32");
-		info.dimcount = 1;
-		info.dim[0] = DEPTH_WIDTH * DEPTH_HEIGHT;
+		info.dimcount = 2;
+		info.dim[0] = DEPTH_WIDTH;
+		info.dim[1] = DEPTH_HEIGHT;
 		jit_object_method(cloud_mat, _jit_sym_setinfo_ex, &info);
 		jit_object_method(cloud_mat, _jit_sym_clear);
 		jit_object_method(cloud_mat, _jit_sym_getdata, &cloud_back);
