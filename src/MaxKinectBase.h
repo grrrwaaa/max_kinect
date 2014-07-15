@@ -599,32 +599,32 @@ public:
 				vec3f uv;
 				// flip back from OpenGL:
 				// move the point into the RGB camera's coordinate frame:
-				float x =  cloud_back[i].x - rgb_translate.x;
-				float y = -cloud_back[i].y - rgb_translate.y;
-				float z = -cloud_back[i].z - rgb_translate.z;
+				float x0 =  cloud_back[i].x - rgb_translate.x;
+				float y0 = -cloud_back[i].y - rgb_translate.y;
+				float z0 = -cloud_back[i].z - rgb_translate.z;
 				
 				// rotate:
-				float x1 = rgb_rotate[0].x * x
-					     + rgb_rotate[1].x * y
-					     + rgb_rotate[2].x * z;
-				float y1 = rgb_rotate[0].y * x
-					     + rgb_rotate[1].y * y
-					     + rgb_rotate[2].y * z;
-				float z1 = rgb_rotate[0].z * x
-					     + rgb_rotate[1].z * y
-					     + rgb_rotate[2].z * z;
+				float x1 = rgb_rotate[0].x * x0
+					     + rgb_rotate[1].x * y0
+					     + rgb_rotate[2].x * z0;
+				float y1 = rgb_rotate[0].y * x0
+					     + rgb_rotate[1].y * y0
+					     + rgb_rotate[2].y * z0;
+				float z1 = rgb_rotate[0].z * x0
+					     + rgb_rotate[1].z * y0
+					     + rgb_rotate[2].z * z0;
 				
 				// remove depth (location of the 3D depth point on the RGB image plane):
 				float rz = 1.f/z1;
-				x = x1 * rz;
-				y = y1 * rz;
+				x0 = x1 * rz;
+				y0 = y1 * rz;
 								
 				// use this to index our pre-calculated RGB distortion map
 				// the map is in the [-0.625, 0.625] range, but we want a coordinate in the appropriate range:
 				// convert to [0..1] range using 0.5+ndc*0.8; then scale to pixel size:
 				vec2f t;
-				t.x = (0.5f + x*0.8f) * (DEPTH_WIDTH);
-				t.y = (0.5f + y*0.8f) * (DEPTH_HEIGHT);
+				t.x = (0.5f + x0*0.8f) * (DEPTH_WIDTH);
+				t.y = (0.5f + y0*0.8f) * (DEPTH_HEIGHT);
 				
 				// adjust for rounding:
 				t.x += 0.5f;
