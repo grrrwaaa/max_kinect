@@ -182,6 +182,8 @@ public:
 		t_kinect *x = (t_kinect *)freenect_get_user(dev);
 		if(!x)return;
 		
+		x->cloud_rgb_process();
+		
 		x->new_rgb_data = 1;
 	}
 	

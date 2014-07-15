@@ -256,6 +256,7 @@ public:
 	}
 
 	void pollColor() {
+		int newframe = 0;
 		if (!device) return;
 
 		HRESULT result;
@@ -309,7 +310,7 @@ public:
 			} while (--cells);
 
 
-			new_rgb_data = 1;
+			newframe = 1;
 		}
 
 		// We're done with the texture so unlock it
@@ -318,6 +319,10 @@ public:
 //	ReleaseFrame:
 		// Release the frame
 		device->NuiImageStreamReleaseFrame(colorStreamHandle, &imageFrame);
+		
+		if (newframe) cloud_rgb_process();
+		
+		new_rgb_data = 1;
 	}
 
 	void led(int option) {

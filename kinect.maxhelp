@@ -8,7 +8,7 @@
 			"architecture" : "x86"
 		}
 ,
-		"rect" : [ 234.0, 114.0, 1124.0, 678.0 ],
+		"rect" : [ 648.0, 44.0, 1124.0, 678.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 10.0,
@@ -37,7 +37,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 15.0, 109.5, 145.0, 19.0 ],
-					"presentation_rect" : [ 15.0, 106.5, 0.0, 0.0 ],
 					"text" : "Graham Wakefield 2014"
 				}
 

@@ -48,10 +48,15 @@ void kinect_assist(t_kinect *x, void *b, long m, long a, char *s)
 	}
 }
 
-void kinect_depth_map(t_kinect *x, t_symbol *s, long argc, t_atom *argv) {
-	if (argc > 0) {
-		// grab the last argument for the matrix name:
+void kinect_depth_map(t_kinect *x, t_symbol *s, long argc, t_atom * argv) {
+	if (argc > 1) {
 		x->depth_map(atom_getsym(&argv[argc-1]));
+	}
+}
+
+void kinect_rgb_map(t_kinect *x, t_symbol *s, long argc, t_atom * argv) {
+	if (argc > 1) {
+		x->rgb_map(atom_getsym(&argv[argc-1]));
 	}
 }
 
@@ -140,7 +145,17 @@ int C74_EXPORT main(void) {
 	class_addmethod(maxclass, (method)kinect_close, "close", 0);
 	
 	class_addmethod(maxclass, (method)kinect_depth_map, "depth_map", A_GIMME, 0);
+	class_addmethod(maxclass, (method)kinect_rgb_map, "rgb_map", A_GIMME, 0);
 	class_addmethod(maxclass, (method)kinect_dictionary, "dictionary", A_SYM, 0);
+	
+	CLASS_ATTR_LONG(maxclass, "use_rgb", 0, t_kinect, use_rgb);
+	CLASS_ATTR_STYLE(maxclass, "use_rgb", 0, "onoff");
+	
+	CLASS_ATTR_LONG(maxclass, "align_rgb_to_cloud", 0, t_kinect, align_rgb_to_cloud);
+	CLASS_ATTR_STYLE(maxclass, "align_rgb_to_cloud", 0, "onoff");
+	
+	CLASS_ATTR_LONG(maxclass, "transform_cloud", 0, t_kinect, transform_cloud);
+	CLASS_ATTR_STYLE(maxclass, "transform_cloud", 0, "onoff");
 	
 	CLASS_ATTR_LONG(maxclass, "unique", 0, t_kinect, unique);
 	CLASS_ATTR_STYLE_LABEL(maxclass, "unique", 0, "onoff", "output frame only when new data is received");
@@ -156,6 +171,12 @@ int C74_EXPORT main(void) {
 	CLASS_ATTR_FLOAT(maxclass, "depth_base", 0, t_kinect, depth_base);
 	CLASS_ATTR_FLOAT(maxclass, "depth_offset", 0, t_kinect, depth_offset);
 	
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "rgb_focal", 0, t_kinect, rgb_focal, 2);
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "rgb_center", 0, t_kinect, rgb_center, 2);
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "rgb_translate", 0, t_kinect, rgb_translate, 3);
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "rgb_rotate", 0, t_kinect, rgb_rotate, 9);
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "trans_translate", 0, t_kinect, trans_translate, 3);
+	CLASS_ATTR_FLOAT_ARRAY(maxclass, "trans_rotate", 0, t_kinect, trans_rotate, 9);
 	
 	class_register(CLASS_BOX, maxclass); /* CLASS_NOBOX */
 	kinect_class = maxclass;

@@ -24,12 +24,61 @@ extern "C" {
 #define DEPTH_WIDTH 640
 #define DEPTH_HEIGHT 480
 
+
+
 class MaxKinectBase {
 public:
 
 	struct vec2i { int x, y; };
 	struct vec2f { float x, y; };
 	struct vec3f { float x, y, z; };
+	struct vec3c { uint8_t x, y, z; };
+	
+	inline vec2f sample2f(vec2f * data, vec2f coord, int stridey) {
+		// warning: no bounds checking!
+		vec2f c00 = data[(int)(coord.x) + (int)(coord.y)*stridey];
+		vec2f c01 = data[(int)(coord.x) + (int)(coord.y+1.f)*stridey];
+		vec2f c10 = data[(int)(coord.x+1.f) + (int)(coord.y)*stridey];
+		vec2f c11 = data[(int)(coord.x+1.f) + (int)(coord.y+1.f)*stridey];
+		float bx = coord.x - (int)coord.x;
+		float by = coord.y - (int)coord.y;
+		float ax = 1.f - bx;
+		float ay = 1.f - by;
+		vec2f result;
+		result.x = c00.x * ax * ay
+				 + c01.x * ax * by
+				 + c10.x * bx * ay
+				 + c11.x * bx * by;
+		result.y = c00.y * ax * ay
+				 + c01.y * ax * by
+				 + c10.y * bx * ay
+				 + c11.y * bx * by;
+		return result;
+	}
+	
+	inline void sample3c(vec3c& result, vec3c * data, vec2f coord, int stridey) {
+		// warning: no bounds checking!
+		vec3c c00 = data[(int)(coord.x) + (int)(coord.y)*stridey];
+		vec3c c01 = data[(int)(coord.x) + (int)(coord.y+1.f)*stridey];
+		vec3c c10 = data[(int)(coord.x+1.f) + (int)(coord.y)*stridey];
+		vec3c c11 = data[(int)(coord.x+1.f) + (int)(coord.y+1.f)*stridey];
+		float bx = coord.x - (int)coord.x;
+		float by = coord.y - (int)coord.y;
+		float ax = 1.f - bx;
+		float ay = 1.f - by;
+		result.x = c00.x * ax * ay
+				 + c01.x * ax * by
+				 + c10.x * bx * ay
+				 + c11.x * bx * by;
+		result.y = c00.y * ax * ay
+				 + c01.y * ax * by
+				 + c10.y * bx * ay
+				 + c11.y * bx * by;
+		result.z = c00.z * ax * ay
+				 + c01.z * ax * by
+				 + c10.z * bx * ay
+				 + c11.z * bx * by;
+	}
 
 	t_object	ob;			// the object itself (must be first)
 
@@ -42,7 +91,7 @@ public:
 	void *		rgb_mat;
 	void *		rgb_mat_wrapper;
 	t_atom		rgb_name[1];
-	uint8_t *	rgb_back;
+	vec3c * 	rgb_back;
 	
 	// depth matrix for raw output:
 	void *		depth_mat;
@@ -56,16 +105,38 @@ public:
 	t_atom		cloud_name[1];
 	vec3f *		cloud_back;
 	
+	// transformed cloud matrix for output:
+	void *		trans_cloud_mat;
+	void *		trans_cloud_mat_wrapper;
+	t_atom		trans_cloud_name[1];
+	vec3f *		trans_cloud_back;
+	
+	// rgb matrix for cloud output:
+	void *		rgb_cloud_mat;
+	void *		rgb_cloud_mat_wrapper;
+	t_atom		rgb_cloud_name[1];
+	vec3c *		rgb_cloud_back;
+	
 	// attributes:
 	vec2f		depth_focal;
 	vec2f		depth_center;
+	vec2f		rgb_focal;
+	vec2f		rgb_center;
+	vec3f		rgb_translate;
+	vec3f		rgb_rotate[3];
+	vec3f		trans_translate;
+	vec3f		trans_rotate[3];
 	float		depth_base, depth_offset;
 	int			unique;
 	int			device_count;
 	int			near_mode;
 	int			player;
+	int			use_rgb;
+	int			align_rgb_to_cloud;
+	int			transform_cloud;
 	
-	vec2i *		depth_map_data;
+	vec2f *		depth_map_data;
+	vec2f *		rgb_map_data;
 	
 	volatile char new_rgb_data;
 	volatile char new_depth_data;
@@ -77,6 +148,9 @@ public:
 		near_mode = 0;
 		device_count = 0;
 		player = 0;
+		align_rgb_to_cloud = 0;
+		transform_cloud = 0;
+		use_rgb = 1;
 		
 		new_rgb_data = 0;
 		new_depth_data = 0;
@@ -89,6 +163,23 @@ public:
 		depth_center.y = 241.f;
 		depth_focal.x = 597.f;
 		depth_focal.y = 597.f;
+		rgb_center.x = 320.f;
+		rgb_center.y = 240.f;
+		rgb_focal.x = 524.f;
+		rgb_focal.y = 524.f;
+		
+		rgb_translate.x = rgb_translate.y = rgb_translate.z = 0;
+		rgb_rotate[0].y = rgb_rotate[0].z 
+			= rgb_rotate[1].x = rgb_rotate[1].z 
+			= rgb_rotate[2].x = rgb_rotate[2].y = 0;
+		rgb_rotate[0].x = rgb_rotate[1].y = rgb_rotate[2].z = 1;
+		
+		trans_translate.x = trans_translate.y = trans_translate.z = 0;
+		trans_rotate[0].y = trans_rotate[0].z 
+			= trans_rotate[1].x = trans_rotate[1].z 
+			= trans_rotate[2].x = trans_rotate[2].y = 0;
+		trans_rotate[0].x = trans_rotate[1].y = trans_rotate[2].z = 1;
+		
 		
 		// create matrices:
 		t_jit_matrix_info info;
@@ -141,12 +232,48 @@ public:
 		// cache name:
 		atom_setsym(cloud_name, jit_attr_getsym(cloud_mat_wrapper, _jit_sym_name));
 		
-		// init depth_map with default data:
-		depth_map_data = (vec2i *)sysmem_newptr(DEPTH_WIDTH*DEPTH_HEIGHT * sizeof(vec2i));
+		trans_cloud_mat_wrapper = jit_object_new(gensym("jit_matrix_wrapper"), jit_symbol_unique(), 0, NULL);
+		
+		trans_cloud_mat = jit_object_method(trans_cloud_mat_wrapper, _jit_sym_getmatrix);
+		// create the internal data:
+		jit_matrix_info_default(&info);
+		info.flags |= JIT_MATRIX_DATA_PACK_TIGHT;
+		info.planecount = 3;
+		info.type = gensym("float32");
+		info.dimcount = 2;
+		info.dim[0] = DEPTH_WIDTH;
+		info.dim[1] = DEPTH_HEIGHT;
+		jit_object_method(trans_cloud_mat, _jit_sym_setinfo_ex, &info);
+		jit_object_method(trans_cloud_mat, _jit_sym_clear);
+		jit_object_method(trans_cloud_mat, _jit_sym_getdata, &trans_cloud_back);
+		// cache name:
+		atom_setsym(trans_cloud_name, jit_attr_getsym(trans_cloud_mat_wrapper, _jit_sym_name));
+		
+		rgb_cloud_mat_wrapper = jit_object_new(gensym("jit_matrix_wrapper"), jit_symbol_unique(), 0, NULL);
+		rgb_cloud_mat = jit_object_method(rgb_cloud_mat_wrapper, _jit_sym_getmatrix);
+		// create the internal data:
+		jit_matrix_info_default(&info);
+		info.flags |= JIT_MATRIX_DATA_PACK_TIGHT;
+		info.planecount = 3;
+		info.type = gensym("char");
+		info.dimcount = 2;
+		info.dim[0] = DEPTH_WIDTH;
+		info.dim[1] = DEPTH_HEIGHT;
+		jit_object_method(rgb_cloud_mat, _jit_sym_setinfo_ex, &info);
+		jit_object_method(rgb_cloud_mat, _jit_sym_clear);
+		jit_object_method(rgb_cloud_mat, _jit_sym_getdata, &rgb_cloud_back);
+		// cache name:
+		atom_setsym(rgb_cloud_name, jit_attr_getsym(rgb_cloud_mat_wrapper, _jit_sym_name));
+		
+		// init undistortion maps with default data:
+		depth_map_data = (vec2f *)sysmem_newptr(DEPTH_WIDTH*DEPTH_HEIGHT * sizeof(vec2f));
+		rgb_map_data = (vec2f *)sysmem_newptr(DEPTH_WIDTH*DEPTH_HEIGHT * sizeof(vec2f));
 		for (int i=0, y=0; y<DEPTH_HEIGHT; y++) {
 			for (int x=0; x<DEPTH_WIDTH; x++, i++) {
 				depth_map_data[i].x = x;
 				depth_map_data[i].y = y;
+				rgb_map_data[i].x = x;
+				rgb_map_data[i].y = y;
 			}
 		}
 	}
@@ -165,6 +292,7 @@ public:
 			cloud_mat_wrapper = NULL;
 		}
 		sysmem_freeptr(depth_map_data);
+		sysmem_freeptr(rgb_map_data);
 	}
 	
 	void depth_map(t_symbol * name) {
@@ -216,16 +344,17 @@ public:
 				
 				// convert column pointer to vec2f:
 				const vec2f& v = *(vec2f *)(ip);
+				float ix = (v.x);
+				float iy = (v.y);
 				
-				//post("%i %i: %i %f %f", x, y, i, v.x, v.y);
-			
-				// +0.5 for nice rounding -- TODO is this necessary?
-				int ix = (int)(v.x + 0.5);
-				int iy = (int)(v.y + 0.5);
+				// shift index by +0.5 so that (int) rounding (in cloud_process) 
+				// puts it in the proper pixel center
+				ix += 0.5;
+				iy += 0.5;
 				
 				// clip at boundaries:
-				ix = ix < 0 ? 0 : ix >= DEPTH_WIDTH ? DEPTH_WIDTH-1 : ix;
-				iy = iy < 0 ? 0 : iy >= DEPTH_HEIGHT ? DEPTH_HEIGHT-1 : iy;
+				ix = ix < 0 ? 0 : ix >= DEPTH_WIDTH-1 ? DEPTH_WIDTH-1 : ix;
+				iy = iy < 0 ? 0 : iy >= DEPTH_HEIGHT-1 ? DEPTH_HEIGHT-1 : iy;
 				
 				// store:
 				depth_map_data[i].x = ix;
@@ -245,24 +374,120 @@ public:
 		}
 	}
 	
+	void rgb_map(t_symbol * name) {
+		t_jit_matrix_info in_info;
+		long in_savelock;
+		char * in_bp;
+		t_jit_err err = 0;
+		
+		// get matrix from name:
+		void * in_mat = jit_object_findregistered(name);
+		if (!in_mat) {
+			object_error(&ob, "failed to acquire matrix");
+			err = JIT_ERR_INVALID_INPUT;
+			goto out;
+		}
+		
+		// lock it:
+		in_savelock = (long)jit_object_method(in_mat, _jit_sym_lock, 1);
+		
+		// first ensure the type is correct:
+		jit_object_method(in_mat, _jit_sym_getinfo, &in_info);
+		jit_object_method(in_mat, _jit_sym_getdata, &in_bp);
+		if (!in_bp) {
+			err = JIT_ERR_INVALID_INPUT;
+			goto unlock;
+		}
+		
+		if (in_info.planecount != 2) {
+			err = JIT_ERR_MISMATCH_PLANE;
+			goto unlock;
+		}
+		
+		if (in_info.type != _jit_sym_float32) {
+			err = JIT_ERR_MISMATCH_TYPE;
+			goto unlock;
+		}
+		
+		if (in_info.dimcount != 2 || in_info.dim[0] != DEPTH_WIDTH || in_info.dim[1] != DEPTH_HEIGHT) {
+			err = JIT_ERR_MISMATCH_DIM;
+			goto unlock;
+		}
+
+		// copy matrix data into depth map:
+		for (int i=0, y=0; y<DEPTH_HEIGHT; y++) {
+			// get row pointer:
+			char * ip = in_bp + y*in_info.dimstride[1];
+			
+			for (int x=0; x<DEPTH_WIDTH; x++, i++) {
+				
+				// convert column pointer to vec2f:
+				const vec2f& v = *(vec2f *)(ip);
+				float ix = (v.x);
+				float iy = (v.y);
+				
+				// shift index by +0.5 so that (int) rounding (in cloud_process) 
+				// puts it in the proper pixel center
+				ix += 0.5;
+				iy += 0.5;
+				
+				// clip at boundaries:
+				ix = ix < 0 ? 0 : ix >= DEPTH_WIDTH-1 ? DEPTH_WIDTH-1 : ix;
+				iy = iy < 0 ? 0 : iy >= DEPTH_HEIGHT-1 ? DEPTH_HEIGHT-1 : iy;
+				
+				// store:
+				rgb_map_data[i].x = ix;
+				rgb_map_data[i].y = iy;
+				
+				// move to next column:
+				ip += in_info.dimstride[0];
+			}
+		}
+		
+	unlock:
+		// restore matrix lock state:
+		jit_object_method(in_mat, _jit_sym_lock, in_savelock);
+	out:
+		if (err) {
+			jit_error_code(&ob, err);
+		}
+	}
+	
 	void bang() {
 		if (unique) {
-			if (new_rgb_data) {
-				new_rgb_data = 0;
-				outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );
+			if (use_rgb && new_rgb_data) {
+				if (!align_rgb_to_cloud) 
+					outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );	
+				new_rgb_data = 0;			
 			}
 			if (new_depth_data) {
-				new_depth_data = 0;
 				outlet_anything(outlet_depth, _jit_sym_jit_matrix, 1, depth_name);
+				new_depth_data = 0;
 			}
 			if (new_cloud_data) {
+				if (use_rgb && align_rgb_to_cloud)
+					outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_cloud_name  );
+				if (transform_cloud) {
+					outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, trans_cloud_name);
+				} else {
+					outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
+				}
 				new_cloud_data = 0;
-				outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
 			}
 		} else {
-			outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );
+			if (use_rgb) {
+				if (align_rgb_to_cloud) {
+					outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_cloud_name  );
+				} else {
+					outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );
+				}
+			}
 			outlet_anything(outlet_depth, _jit_sym_jit_matrix, 1, depth_name);
-			outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
+			if (transform_cloud) {
+				outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, trans_cloud_name);
+			} else {
+				outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
+			}
 		}
 
 	}
@@ -277,23 +502,43 @@ public:
 				
 				// remove the effects of lens distortion
 				// (lookup into distortion map)
-				vec2i di = depth_map_data[i];
-				uint16_t d = depth_back[di.x + di.y*DEPTH_WIDTH];
 				
 				// Of course this isn't optimal; actually we should be doing the reverse, 
 				// i.e. converting cell index to match the distortion. 
 				// But it's not trivial to invert the lens distortion.
+				// Using a lookup map like this is also how OpenCV's undistort() works.
 				
-				//if (d < 2047) {
+				vec2f di = depth_map_data[i];
+				uint16_t d = depth_back[(int)(di.x) + (int)(di.y)*DEPTH_WIDTH];
+				
+				/*
+					Using depth interpolation only makes sense if we have pre-filtered
+					the depth data to remove null results (pixel too near, too far, or unknown)
+				
+				if (use_depth_interpolation) {
+					float dxb = di.x - (int)(di.x);
+					float dyb = di.y - (int)(di.y);
+					float dxa = 1.-dxb;
+					float dya = 1.-dyb;
+					uint16_t d00 = d;
+					uint16_t d10 = depth_back[(int)(di.x + 1) + (int)(di.y)*DEPTH_WIDTH];
+					uint16_t d01 = depth_back[(int)(di.x) + (int)(di.y+1)*DEPTH_WIDTH];
+					uint16_t d11 = depth_back[(int)(di.x + 1) + (int)(di.y+1)*DEPTH_WIDTH];
+					d = (uint16_t)(
+						  d00 * dxa * dya
+						+ d10 * dxb * dya
+						+ d01 * dxa * dyb
+						+ d11 * dxb * dyb
+						);
+				}
+				*/
+				
+//				if (d < 2047) {
 					// convert pixel coordinate to NDC depth plane intersection
 					float uv_x = (x - depth_center.x) * inv_depth_focal_x;
 					float uv_y = (y - depth_center.y) * inv_depth_focal_y;
 					
-					// convert Kinect depth to Z
-					// NOTE: this should be cached into a lookup table
-					// TODO: what are these magic numbers? the result is meters					
-					
-					// convert raw disparity to meters
+					// convert to meters
 					float z = d * 0.001f;
 
 					// and scale according to depth (projection)
@@ -305,6 +550,32 @@ public:
 					cloud_back[i].y = -uv_y;
 					cloud_back[i].z = -z;
 					
+					if (transform_cloud) {
+					
+						float x1 = cloud_back[i].x;
+						float y1 = cloud_back[i].y;
+						float z1 = cloud_back[i].z;
+						
+						// rotate:
+						float x2 = trans_rotate[0].x * x1
+								 + trans_rotate[0].y * y1
+								 + trans_rotate[0].z * z1;
+						float y2 = trans_rotate[1].x * x1
+								 + trans_rotate[1].y * y1
+								 + trans_rotate[1].z * z1;
+						float z2 = trans_rotate[2].x * x1
+								 + trans_rotate[2].y * y1
+								 + trans_rotate[2].z * z1;
+						
+						x2 += trans_translate.x;
+						y2 += trans_translate.y;
+						z2 += trans_translate.z;
+								 
+						trans_cloud_back[i].x = x2;
+						trans_cloud_back[i].y = y2;
+						trans_cloud_back[i].z = z2;
+					}
+					
 				//} else {
 //				
 //					cloud_back[i].x = 0;
@@ -313,7 +584,77 @@ public:
 //				}
 			}
 		}
+		
 		new_cloud_data = 1;
+	}
+	
+	// find a corresponding RGB color for each cloud point:
+	// TODO: reduce to valid cloud points only?
+	void cloud_rgb_process() {
+		if (!align_rgb_to_cloud) return;
+	
+		// for each cell:
+		for (int i=0, y=0; y<DEPTH_HEIGHT; y++) {
+			for (int x=0; x<DEPTH_WIDTH; x++, i++) {
+				vec3f uv;
+				// flip back from OpenGL:
+				// move the point into the RGB camera's coordinate frame:
+				float x =  cloud_back[i].x - rgb_translate.x;
+				float y = -cloud_back[i].y - rgb_translate.y;
+				float z = -cloud_back[i].z - rgb_translate.z;
+				
+				// rotate:
+				float x1 = rgb_rotate[0].x * x
+					     + rgb_rotate[1].x * y
+					     + rgb_rotate[2].x * z;
+				float y1 = rgb_rotate[0].y * x
+					     + rgb_rotate[1].y * y
+					     + rgb_rotate[2].y * z;
+				float z1 = rgb_rotate[0].z * x
+					     + rgb_rotate[1].z * y
+					     + rgb_rotate[2].z * z;
+				
+				// remove depth (location of the 3D depth point on the RGB image plane):
+				float rz = 1.f/z1;
+				x = x1 * rz;
+				y = y1 * rz;
+								
+				// use this to index our pre-calculated RGB distortion map
+				// the map is in the [-0.625, 0.625] range, but we want a coordinate in the appropriate range:
+				// convert to [0..1] range using 0.5+ndc*0.8; then scale to pixel size:
+				vec2f t;
+				t.x = (0.5f + x*0.8f) * (DEPTH_WIDTH);
+				t.y = (0.5f + y*0.8f) * (DEPTH_HEIGHT);
+				
+				// adjust for rounding:
+				t.x += 0.5f;
+				t.y += 0.5f;
+				
+				// ignore out of range depth points:
+				if (t.x > DEPTH_WIDTH-1 || t.x < 0 || t.y > DEPTH_HEIGHT-1 || t.y < 0) {
+					rgb_cloud_back[i].x = 0;
+					rgb_cloud_back[i].y = 0;
+					rgb_cloud_back[i].z = 0;
+				
+				} else {
+				
+					// warp texture coordinate according to the map:
+					t = sample2f(rgb_map_data, t, DEPTH_WIDTH);
+					
+					// ignore out of range points:
+					if (t.x > DEPTH_WIDTH-1 || t.x < 0 || t.y > DEPTH_HEIGHT-1 || t.y < 0) {
+						rgb_cloud_back[i].x = 0;
+						rgb_cloud_back[i].y = 0;
+						rgb_cloud_back[i].z = 0;
+					
+					} else {
+					
+						// use it to sample the RGB view:
+						sample3c(rgb_cloud_back[i], rgb_back, t, DEPTH_WIDTH);
+					}
+				}
+			}
+		}
 	}
 	
 	void dictionary(t_symbol *s, long argc, t_atom *argv) {
