@@ -116,6 +116,22 @@ public:
 		object_post(&ob, "device initialized");
 
 		dwImageFrameFlags = 0; 
+		if (near_mode) dwImageFrameFlags |= NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+		result = device->NuiImageStreamOpen(
+			NUI_IMAGE_TYPE_COLOR, //NUI_IMAGE_TYPE eImageType,
+			NUI_IMAGE_RESOLUTION_640x480, // NUI_IMAGE_RESOLUTION eResolution,
+			dwImageFrameFlags,
+			2, //DWORD dwFrameLimit,
+			0, 
+			&colorStreamHandle);
+		if (result != S_OK) {
+			object_error(&ob, "failed to open stream");
+			goto done;
+		}
+		
+		object_post(&ob, "opened color stream");
+
+		dwImageFrameFlags = 0; 
 		dwImageFrameFlags |= NUI_IMAGE_STREAM_FLAG_DISTINCT_OVERFLOW_DEPTH_VALUES;
 		if (near_mode) dwImageFrameFlags |= NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
 		NUI_IMAGE_TYPE eImageType = NUI_IMAGE_TYPE_DEPTH;
@@ -133,22 +149,6 @@ public:
 		}
 		
 		object_post(&ob, "opened depth stream");
-
-		dwImageFrameFlags = 0; 
-		if (near_mode) dwImageFrameFlags |= NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
-		result = device->NuiImageStreamOpen(
-			NUI_IMAGE_TYPE_COLOR, //NUI_IMAGE_TYPE eImageType,
-			NUI_IMAGE_RESOLUTION_640x480, // NUI_IMAGE_RESOLUTION eResolution,
-			dwImageFrameFlags,
-			2, //DWORD dwFrameLimit,
-			0, 
-			&colorStreamHandle);
-		if (result != S_OK) {
-			object_error(&ob, "failed to open stream");
-			goto done;
-		}
-		
-		object_post(&ob, "opened color stream");
 
 		id = (CString)(device->NuiUniqueId());
 
