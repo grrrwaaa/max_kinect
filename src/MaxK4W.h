@@ -1,6 +1,6 @@
 #include "MaxKinectBase.h"
 
-#include <atlstr.h>
+//#include <atlstr.h>
 
 #include "NuiApi.h"
 
@@ -98,7 +98,7 @@ public:
 		DWORD dwImageFrameFlags;
 		DWORD initFlags = 0;
 
-		CString id;
+//		CString id;
 
 		initFlags |= NUI_INITIALIZE_FLAG_USES_COLOR;
 		if (player) {
@@ -150,9 +150,8 @@ public:
 		
 		object_post(&ob, "opened depth stream");
 
-		id = (CString)(device->NuiUniqueId());
-
-		object_post(&ob, "id %s", id);
+	//	id = (CString)(device->NuiUniqueId());
+	//	object_post(&ob, "id %s", id);
 		//object_post(&ob, "aid %s cid %s", (const char*)(_bstr_t(device->NuiAudioArrayId(), false)), (const char*)(_bstr_t(device->NuiDeviceConnectionId(), false)));
 
 		capturing = 1;
@@ -236,7 +235,7 @@ public:
 			do {
 				//*dst = (*src) & NUI_IMAGE_PLAYER_INDEX_MASK; // player ID
 				//*dst = (*src) >> NUI_IMAGE_PLAYER_INDEX_SHIFT; // depth in mm
-				*dst = src->depth;
+				*dst = (src->depth);	
 				// src->playerIndex;
 				dst++;
 				src++;
@@ -244,11 +243,33 @@ public:
 			new_depth_data = 1;
 		}
 
+
+		// for each cell:
+		for (int i=0, y=0; y<DEPTH_HEIGHT; y++) {
+			for (int x=0; x<DEPTH_WIDTH; x++, i++) {
+				uint32_t d = depth_back[i];
+				uint32_t dmm = NuiDepthPixelToDepth(d);
+				Vector4 pos = NuiTransformDepthImageToSkeleton(x, y, d);
+				float iw = 1.f/pos.w;
+				vec3f& p = cloud_back[i];
+				p.x = pos.x * iw;
+				p.y = pos.y * iw;
+				p.z = pos.z * iw;
+				long cx, cy;	// coordinates in the rgb image
+				NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution(
+                    NUI_IMAGE_RESOLUTION_640x480, // color frame resolution
+                    NUI_IMAGE_RESOLUTION_640x480, // depth frame resolution
+                    NULL,                         // pan/zoom of color image (IGNORE THIS)
+                    x, y, d,                  // Column, row, and depth in depth image
+                    &cx, &cy        // Output: column and row (x,y) in the color image
+                );
+			}
+		}
 		// We're done with the texture so unlock it
 		imageTexture->UnlockRect(0);
 
-		cloud_process();
-
+		
+		//cloud_process();
 	ReleaseFrame:
 		// Release the frame
 		device->NuiImageStreamReleaseFrame(depthStreamHandle, &imageFrame);
