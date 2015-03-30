@@ -52,16 +52,20 @@ public:
 	
 	// internal data:
 	uint16_t *	depth_data;
+	glm::i8vec3 * rgb_data;
 	
 	Kinect() : KinectBase() {
 		device = 0;
 		// depth buffer doesn't use a jit_matrix, because uint16_t is not a Jitter type:
 		depth_data = (uint16_t *)sysmem_newptr(KINECT_DEPTH_WIDTH*KINECT_DEPTH_HEIGHT * sizeof(uint16_t));
+		rgb_data = (glm::i8vec3 *)sysmem_newptr(KINECT_DEPTH_WIDTH*KINECT_DEPTH_HEIGHT * sizeof(glm::i8vec3));
+
 	}
 	
 	~Kinect() {
 		close();
 		sysmem_freeptr(depth_data);
+		sysmem_freeptr(rgb_data);
 	}
 	
 	void getdevlist() {
@@ -215,21 +219,40 @@ public:
 		return NULL;
 	}
 	
+	void rgb_process(glm::i8vec3 *pixels) {
+		if (mirror) makeMirror(pixels);
+		
+		//if (x->align_rgb_to_cloud) x->cloud_rgb_process();
+		
+		new_rgb_data = 1;
+	}
+	
 	static void rgb_callback(freenect_device *dev, void *pixels, uint32_t timestamp){
 		Kinect *x = (Kinect *)freenect_get_user(dev);
 		if(!x)return;
 		
-		//if (x->align_rgb_to_cloud) x->cloud_rgb_process();
-		
-		// nothing to do... the raw data is already there
-		x->new_rgb_data = 1;
+		x->rgb_process((glm::i8vec3 *)pixels);
 	}
 	
 	void depth_process() {
-		// copy raw 16-bit depth data into 32-bit matrix for output:
-		for (int i=0; i<KINECT_DEPTH_HEIGHT*KINECT_DEPTH_WIDTH; i++) {
-			depth_back[i] = depth_data[i];
+		if (mirror) {
+			for (int i=0; i<KINECT_DEPTH_WIDTH * KINECT_DEPTH_HEIGHT; i += KINECT_DEPTH_WIDTH) {
+				uint32_t * dst = depth_back + i;
+				uint16_t * src = depth_data + i + (KINECT_DEPTH_WIDTH-1);
+				int cells = KINECT_DEPTH_WIDTH;
+				do {
+					*dst++ = *src++;
+				} while (--cells);
+			}
+		} else {
+			uint32_t * dst = depth_back;
+			uint16_t * src = depth_data;
+			int cells = KINECT_DEPTH_HEIGHT * KINECT_DEPTH_WIDTH;
+			do {
+				*dst++ = *src++;
+			} while (--cells);
 		}
+		
 		new_depth_data = 1;
 		
 		//cloud_process();	// generate point cloud
@@ -492,33 +515,53 @@ public:
 
 		// Make sure we've received valid data
 		if (LockedRect.Pitch != 0) {
-			
-			// convert to Jitter-friendly RGB layout:
-			//const uint16_t * src = (const uint16_t *)LockedRect.pBits;
-			NUI_DEPTH_IMAGE_PIXEL * src = (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits;
-			uint32_t * dst = depth_back;
-//			char * dstp = player_back;
-
 			if (mirror) {
+				uint32_t * dst = depth_back;
+				NUI_DEPTH_IMAGE_PIXEL * src = (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits;
 				int cells = KINECT_DEPTH_HEIGHT * KINECT_DEPTH_WIDTH;
 				do {
-					*dst++ = src->depth;
-//					*dstp++ = (char)src->playerIndex;
+					*dst++ = *src;
+					//					*dstp++ = (char)src->playerIndex;
 					src++;
 				} while (--cells);
 			} else {
 				for (int i=0; i<KINECT_DEPTH_WIDTH * KINECT_DEPTH_HEIGHT; i += KINECT_DEPTH_WIDTH) {
-					for (int x=0; x<KINECT_DEPTH_WIDTH; ++x) {
-						int i1 = i+x;
-						int i0 = i+(KINECT_DEPTH_WIDTH-1)-x;
-						//*dst = (*src) & NUI_IMAGE_PLAYER_INDEX_MASK; // player ID
-						//*dst = (*src) >> NUI_IMAGE_PLAYER_INDEX_SHIFT; // depth in mm
-						dst[i1] = src[i0].depth;
-		//				*dstp++ = (char)src->playerIndex;
-						//src++;
-					}
-				} 
+					uint32_t * dst = depth_back + i;
+					NUI_DEPTH_IMAGE_PIXEL * src = ((NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits) + i + (KINECT_DEPTH_WIDTH-1);
+					int cells = KINECT_DEPTH_WIDTH;
+					do {
+						*dst++ = *src;
+//						*dstp++ = (char)src->playerIndex;
+						src++;
+					} while (--cells);
+				}
 			}
+
+//			// convert to Jitter-friendly RGB layout:
+//			//const uint16_t * src = (const uint16_t *)LockedRect.pBits;
+//			NUI_DEPTH_IMAGE_PIXEL * src = (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits;
+//			uint32_t * dst = depth_back;
+//			//			char * dstp = player_back;
+//			if (mirror) {
+//				int cells = KINECT_DEPTH_HEIGHT * KINECT_DEPTH_WIDTH;
+//				do {
+//					*dst++ = src->depth;
+////					*dstp++ = (char)src->playerIndex;
+//					src++;
+//				} while (--cells);
+//			} else {
+//				for (int i=0; i<KINECT_DEPTH_WIDTH * KINECT_DEPTH_HEIGHT; i += KINECT_DEPTH_WIDTH) {
+//					for (int x=0; x<KINECT_DEPTH_WIDTH; ++x) {
+//						int i1 = i+x;
+//						int i0 = i+(KINECT_DEPTH_WIDTH-1)-x;
+//						//*dst = (*src) & NUI_IMAGE_PLAYER_INDEX_MASK; // player ID
+//						//*dst = (*src) >> NUI_IMAGE_PLAYER_INDEX_SHIFT; // depth in mm
+//						dst[i1] = src[i0].depth;
+//		//				*dstp++ = (char)src->playerIndex;
+//						//src++;
+//					}
+//				} 
+//			}
 
 			new_depth_data = 1;
 		}

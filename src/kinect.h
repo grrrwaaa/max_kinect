@@ -244,6 +244,25 @@ struct KinectBase {
 			outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
 		}
 	}
+	
+	template<typename Celltype>
+	void makeMirror(Celltype * cells) {
+		for (int row = 0; row < KINECT_DEPTH_HEIGHT; row++) {
+			// read from the left edge
+			Celltype * fromPos = cells + (row * KINECT_DEPTH_WIDTH);
+			// write to the right edge
+			Celltype * toPos = fromPos + KINECT_DEPTH_WIDTH - 1;
+			while (fromPos < toPos)
+			{
+				Celltype tmp = *toPos;
+				*toPos = *fromPos;
+				*fromPos = tmp;
+				//copy the pixel
+				fromPos++; // move towards the middle
+				toPos--; // move back from the right edge
+			}
+		}
+	}
 };
 
 #endif
