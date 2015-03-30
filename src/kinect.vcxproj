@@ -85,6 +85,7 @@
     <TargetExt>.mxe</TargetExt>
     <IncludePath>$(KINECTSDK10_DIR)\inc;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib</LibraryPath>
+    <OutDir>..</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -95,6 +96,7 @@
     <TargetExt>.mxe</TargetExt>
     <IncludePath>$(KINECTSDK10_DIR)\inc;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib</LibraryPath>
+    <OutDir>..</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -278,6 +280,7 @@
     <ClCompile Include="kinect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="kinect.h" />
     <ClInclude Include="MaxFreenect.h" />
     <ClInclude Include="MaxK4W.h" />
     <ClInclude Include="MaxKinectBase.h" />
