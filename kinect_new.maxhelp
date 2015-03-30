@@ -5,7 +5,7 @@
 			"major" : 7,
 			"minor" : 0,
 			"revision" : 2,
-			"architecture" : "x64",
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
@@ -46,7 +46,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 454.5, 344.5, 80.0, 35.0 ],
+					"patching_rect" : [ 454.5, 344.5, 80.0, 36.0 ],
 					"style" : ""
 				}
 
@@ -120,7 +120,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 15.0, 222.0, 80.0, 35.0 ],
+					"patching_rect" : [ 15.0, 222.0, 80.0, 36.0 ],
 					"style" : ""
 				}
 
@@ -259,6 +259,19 @@
 				}
 
 			}
+, 			{
+				"box" : 				{
+					"attr" : "mirror",
+					"id" : "obj-3",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 400.5, 171.0, 150.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
@@ -334,6 +347,15 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"source" : [ "obj-3", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-2", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
@@ -361,8 +383,8 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "kinect.mxo",
-				"type" : "iLaX"
+				"name" : "kinect.mxe",
+				"type" : "iLaF"
 			}
  ],
 		"embedsnapshot" : 0

@@ -15,7 +15,7 @@ extern "C" {
 #ifdef __GNUC__
 #include <stdint.h>
 #else
-#include "msc_stdint.h"
+#include "stdint.h"
 #endif
 
 // how many glm headers do we really need?
@@ -92,6 +92,9 @@ struct KinectBase {
 	int			unique;	// whether we output whenever there is a bang, or only when there is new data
 	int			use_rgb; // whether to output RGB, or depth only
 	int			align_rgb_to_cloud;	// output RGB image warped to fit cloud
+
+	int			mirror;	// flip the X axis
+	int			near_mode;
 	
 	// outlets:
 	void *		outlet_cloud;
@@ -107,9 +110,13 @@ struct KinectBase {
 		new_rgb_data = 0;
 		new_depth_data = 0;
 		new_cloud_data = 0;
+
+		mirror = 0;
 		
 		use_rgb = 1;
 		align_rgb_to_cloud = 0;
+
+		near_mode = 0;
 		
 		outlet_msg = outlet_new(&ob, 0);
 		outlet_skeleton = outlet_new(&ob, 0);
