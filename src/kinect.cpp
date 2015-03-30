@@ -298,6 +298,7 @@ class Kinect : public KinectBase {
 public:
 
 	INuiSensor* device;
+	INuiCoordinateMapper * mapper;
 	HANDLE colorStreamHandle;
 	HANDLE depthStreamHandle;
 
@@ -306,21 +307,36 @@ public:
 	t_systhread capture_thread;	
 	int capturing;
 
+	NUI_COLOR_IMAGE_POINT * imagepoints;
+	Vector4 * skeletonpoints;
+
 	Kinect() : KinectBase() {
 		device = 0;
+		mapper = 0;
 		colorStreamHandle = 0;
+		depthStreamHandle = 0;
 		capturing = 0;
-		
-		HRESULT result = NuiGetSensorCount(&device_count);
-		if (result != S_OK) object_error(&ob, "failed to get sensor count");
+
+		imagepoints = (NUI_COLOR_IMAGE_POINT *)sysmem_newptr(KINECT_DEPTH_CELLS * sizeof(NUI_COLOR_IMAGE_POINT));
+		skeletonpoints = (Vector4 *)sysmem_newptr(KINECT_DEPTH_CELLS * sizeof(Vector4));
 	}
 	
 	~Kinect() {
 		close();
+
+		sysmem_freeptr(imagepoints);
+		sysmem_freeptr(skeletonpoints);
 	}
 
 	
 	void open(t_symbol *s, long argc, t_atom * argv) {
+
+		HRESULT result = NuiGetSensorCount(&device_count);
+		if (result != S_OK) { 
+			object_error(&ob, "failed to get sensor count");
+			return;
+		}
+
 		int index = 0;
 		if (argc > 0) index = atom_getlong(argv);
 		// TODO: support 'open serial'
@@ -331,7 +347,6 @@ public:
 		}
 	
 		INuiSensor* dev;
-		HRESULT result = 0;
 		result = NuiCreateSensorByIndex(index, &dev);
 		if (result != S_OK) {
 			object_error(&ob, "failed to create sensor");
@@ -450,6 +465,9 @@ public:
 		//object_post(&ob, "id %s", id);
 		//object_post(&ob, "aid %s cid %s", (const char*)(_bstr_t(device->NuiAudioArrayId(), false)), (const char*)(_bstr_t(device->NuiDeviceConnectionId(), false)));
 
+		// get coordinate mapper:
+		device->NuiGetCoordinateMapper(&mapper);
+
 		capturing = 1;
 		post("starting processing");
 		while (capturing) {
@@ -520,19 +538,19 @@ public:
 				NUI_DEPTH_IMAGE_PIXEL * src = (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits;
 				int cells = KINECT_DEPTH_HEIGHT * KINECT_DEPTH_WIDTH;
 				do {
-					*dst++ = *src;
+					*dst++ = src->depth;
 					//					*dstp++ = (char)src->playerIndex;
 					src++;
 				} while (--cells);
 			} else {
-				for (int i=0; i<KINECT_DEPTH_WIDTH * KINECT_DEPTH_HEIGHT; i += KINECT_DEPTH_WIDTH) {
+				for (int i=0; i<KINECT_DEPTH_CELLS; i += KINECT_DEPTH_WIDTH) {
 					uint32_t * dst = depth_back + i;
 					NUI_DEPTH_IMAGE_PIXEL * src = ((NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits) + i + (KINECT_DEPTH_WIDTH-1);
 					int cells = KINECT_DEPTH_WIDTH;
 					do {
-						*dst++ = *src;
+						*dst++ = src->depth;
 //						*dstp++ = (char)src->playerIndex;
-						src++;
+						src--;
 					} while (--cells);
 				}
 			}
@@ -564,13 +582,66 @@ public:
 //			}
 
 			new_depth_data = 1;
+
+			// generate texcoords;
+			if (mapper->MapDepthFrameToColorFrame(
+				NUI_IMAGE_RESOLUTION_640x480,
+				KINECT_DEPTH_CELLS, (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits,
+				NUI_IMAGE_TYPE_COLOR, NUI_IMAGE_RESOLUTION_640x480,
+				KINECT_DEPTH_CELLS, imagepoints)) {
+				object_warn(&ob, "failed to generate texcoords");
+			} else {
+				// convert imagepoints to texcoords:
+				int cells = KINECT_DEPTH_CELLS;
+				if (mirror) {
+					for (int i=0; i<cells; i++) {
+						glm::vec2& dst = texcoord_back[i];
+						const NUI_COLOR_IMAGE_POINT& src = imagepoints[i];
+						dst.x = src.x * (1.f/KINECT_DEPTH_WIDTH);
+						dst.y = 1. - src.y * (1.f/KINECT_DEPTH_HEIGHT);
+					} 
+				} else {
+					for (int i=0; i<cells; i++) {
+						glm::vec2& dst = texcoord_back[i];
+						const NUI_COLOR_IMAGE_POINT& src = imagepoints[i];
+						dst.x = 1. - src.x * (1.f/KINECT_DEPTH_WIDTH);
+						dst.y = 1. - src.y * (1.f/KINECT_DEPTH_HEIGHT);
+					} 
+				}
+			}
+			
+			// let the Kinect SDK convert our depth frame to points in "skeleton space"
+			if (mapper->MapDepthFrameToSkeletonFrame(NUI_IMAGE_RESOLUTION_640x480,
+				KINECT_DEPTH_CELLS, (NUI_DEPTH_IMAGE_PIXEL *)LockedRect.pBits,
+				KINECT_DEPTH_CELLS, skeletonpoints)) {
+				object_warn(&ob, "failed to map depth to cloud");
+			} else {
+
+				// convert to proper vec3:
+				int cells = KINECT_DEPTH_CELLS;
+				for (int i=0; i<cells; i++) {
+					glm::vec3& dst = cloud_back[i];
+					const Vector4& src = skeletonpoints[i];
+					// scale appropriately:
+					float div = 1.f/src.w;
+					// also rotate 180 around y
+					dst.x = -src.x * div;
+					dst.y =  src.y * div;
+					dst.z = -src.z * div;
+				} 
+				
+				new_cloud_data = 1;
+			}
 		}
+
+		
 
 		// We're done with the texture so unlock it
 		imageTexture->UnlockRect(0);
 
 //		cloud_process();
 //		local_cloud_process();
+
 
 	ReleaseFrame:
 		// Release the frame
@@ -614,12 +685,6 @@ public:
 
 		// Make sure we've received valid data
 		if (LockedRect.Pitch != 0) {
-			//post("pitch %d size %d", LockedRect.Pitch, LockedRect.size);
-			//static_cast<BYTE *>(LockedRect.pBits), LockedRect.size
-
-			//sysmem_copyptr(LockedRect.pBits, rgb_back, LockedRect.size);
-
-			// convert to Jitter-friendly RGB layout:
 			const BGRA * src = (const BGRA *)LockedRect.pBits;
 			RGB * dst = (RGB *)rgb_back;
 			if (mirror) {
@@ -643,9 +708,6 @@ public:
 					}
 				} 
 			}
-
-
-			
 
 
 			newframe = 1;

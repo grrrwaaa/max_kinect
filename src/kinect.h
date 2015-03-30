@@ -57,6 +57,7 @@ extern "C" {
 
 #define KINECT_DEPTH_WIDTH 640
 #define KINECT_DEPTH_HEIGHT 480
+#define KINECT_DEPTH_CELLS (KINECT_DEPTH_WIDTH*KINECT_DEPTH_HEIGHT)
 
 struct KinectBase {
 	t_object	ob;			// the object itself (must be first)
@@ -83,6 +84,12 @@ struct KinectBase {
 	void *		cloud_mat_wrapper;
 	t_atom		cloud_name[1];
 	glm::vec3 *	cloud_back;
+	
+	// cloud matrix for output:
+	void *		texcoord_mat;
+	void *		texcoord_mat_wrapper;
+	t_atom		texcoord_name[1];
+	glm::vec2 *	texcoord_back;
 	
 	// pose of cloud:
 	glm::vec3	cloud_position;
@@ -188,6 +195,25 @@ struct KinectBase {
 			// cache name:
 			atom_setsym(cloud_name, jit_attr_getsym(cloud_mat_wrapper, _jit_sym_name));
 		}
+
+		{
+			t_jit_matrix_info info;
+			texcoord_mat_wrapper = jit_object_new(gensym("jit_matrix_wrapper"), jit_symbol_unique(), 0, NULL);
+			texcoord_mat = jit_object_method(texcoord_mat_wrapper, _jit_sym_getmatrix);
+			// create the internal data:
+			jit_matrix_info_default(&info);
+			info.flags |= JIT_MATRIX_DATA_PACK_TIGHT;
+			info.planecount = 2;
+			info.type = gensym("float32");
+			info.dimcount = 2;
+			info.dim[0] = KINECT_DEPTH_WIDTH;
+			info.dim[1] = KINECT_DEPTH_HEIGHT;
+			jit_object_method(texcoord_mat, _jit_sym_setinfo_ex, &info);
+			jit_object_method(texcoord_mat, _jit_sym_clear);
+			jit_object_method(texcoord_mat, _jit_sym_getdata, &texcoord_back);
+			// cache name:
+			atom_setsym(texcoord_name, jit_attr_getsym(texcoord_mat_wrapper, _jit_sym_name));
+		}
 	}
 	
 	~KinectBase() {
@@ -219,6 +245,7 @@ struct KinectBase {
 				
 				if (new_cloud_data) {
 					outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );
+					outlet_anything(outlet_cloud, gensym("texcoord_matrix"), 1, texcoord_name);
 					outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
 					new_cloud_data = 0;
 				}
@@ -234,6 +261,7 @@ struct KinectBase {
 				new_rgb_data = 0;
 				
 				if (new_cloud_data) {
+					outlet_anything(outlet_cloud, gensym("texcoord_matrix"), 1, texcoord_name);
 					outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
 				}
 				new_cloud_data = 0;
@@ -241,6 +269,7 @@ struct KinectBase {
 		} else {
 			outlet_anything(outlet_depth, _jit_sym_jit_matrix, 1, depth_name);
 			outlet_anything(outlet_rgb  , _jit_sym_jit_matrix, 1, rgb_name  );
+			outlet_anything(outlet_cloud, gensym("texcoord_matrix"), 1, texcoord_name);
 			outlet_anything(outlet_cloud, _jit_sym_jit_matrix, 1, cloud_name);
 		}
 	}
