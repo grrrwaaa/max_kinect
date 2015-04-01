@@ -1,6 +1,6 @@
 #include "MaxKinectBase.h"
 
-#include <atlstr.h>
+//#include <atlstr.h>
 
 #include "NuiApi.h"
 
@@ -98,7 +98,7 @@ public:
 		DWORD dwImageFrameFlags;
 		DWORD initFlags = 0;
 
-		CString id;
+		//CString id;
 
 		initFlags |= NUI_INITIALIZE_FLAG_USES_COLOR;
 		if (player) {
@@ -150,9 +150,9 @@ public:
 		
 		object_post(&ob, "opened depth stream");
 
-		id = (CString)(device->NuiUniqueId());
+		//id = (CString)(device->NuiUniqueId());
 
-		object_post(&ob, "id %s", id);
+		//object_post(&ob, "id %s", id);
 		//object_post(&ob, "aid %s cid %s", (const char*)(_bstr_t(device->NuiAudioArrayId(), false)), (const char*)(_bstr_t(device->NuiDeviceConnectionId(), false)));
 
 		capturing = 1;
